@@ -1,7 +1,39 @@
 # Technical Specification
+```mermaid
+PHASE 1  Product Design
+✅ Problem Statement
+✅ Vision
+✅ Business Goal
+✅ Success Criteria
+✅ Hypothesis
+✅ Goals
+✅ Non-Goals
+✅ Constraints
+✅ Assumptions
+✅ Target Users                
+PHASE 2  Requirements                  
+PHASE 3  System Design
+    ✓ User Flow
+    • Data Flow
+    ✓ Architecture
+    ✓ Components
+    ✓ Folder Structure
 
-# Phase 1: Product Definition
-## 1. Problem Statement:
+PHASE 4  Engineering Design
+    • Engineering Principles
+    • Supporting Files
+    • Module/Class Design
+    • Error Handling Strategy
+    • Testing Strategy
+
+PHASE 5  Technology Decisions
+
+PHASE 6  Design Decisions (ADR)
+          Implementation Plan
+
+PHASE 7  Coding
+```
+# 1. Problem Statement:
 People currently interact with software by translating their intentions into sequences of manual actions such, 
 as navigating interfaces, clicking, scrolling, and typing. These interactions are often slower than expressing 
 the intention directly and require unnecessary cognitive effort. This friction is especially noticeable in communication
@@ -69,7 +101,6 @@ chat histories. These users experience friction from repeatedly navigating inter
 - Are evaluating Sayna primarily as a conversational AI rather than as a voice-first task execution tool.
 
 ---
-
 # 5. Functional Requirements.
 
 ## 5.1 Core Functional Requirements.
@@ -102,7 +133,8 @@ chat histories. These users experience friction from repeatedly navigating inter
 
 ## 6.2 Reliability
 1. The system should execute supported actions consistently enough that users can rely on it for everyday WhatsApp tasks.
-2. When confidence in the user's intent is insufficient, the system should request clarification instead of guessing.
+2. 
+3. When confidence in the user's intent is insufficient, the system should request clarification instead of guessing.
 
 ## 6.3 Usability 
 1. The interaction should minimize the mental effort required to complete common whatsapp tasks
@@ -159,7 +191,7 @@ Execute
 Respond
 ```
 ## 9.1 User flow: Extract information
-``` mermaid
+```mermaid
 User opens Sayna
         ↓
 Sayna indicates it is ready and begins listening
@@ -247,6 +279,7 @@ End interaction
 ```
 ---
 
+
 # 10. High Level architecture
 ```mermaid
                     ┌────────────────────────────┐
@@ -268,23 +301,23 @@ End interaction
            ┌───────────────┘          └───────────────┐
            ▼                                          ▼
  ┌─────────────────┐                      ┌──────────────────┐
- │  Voice Manager  │                      │  Intent Manager  │
- └─────────────────┘                      └────────┬─────────┘
-                                                   │
-                                                   ▼
-                                      ┌────────────────────────┐
-                                      │ Clarification Manager  │
+ │  Voice Manager  │                      │  Intent Manager  │ LLM CLIENT
+ └─────────┬───────┘                      └────────┬─────────┘
+           │                                       │
+           ▼                                       ▼
+  STT CLIENT                          ┌────────────────────────┐
+                                      │ Clarification Manager  │ LLM CLIENT
                                       └───────────┬────────────┘
                                                   │
                                                   ▼
                                      ┌─────────────────────────┐
-                                     │ WhatsApp Action Manager │
+                                     │ WhatsApp Action Manager │ 
                                      └─────────────────────────┘
                                                   │
                                                   │
                                                   ▼
                                      ┌─────────────────────────┐
-                                     │   Content Processor     │
+                                     │   Content Processor     │ LLM CLIENT
                                      └─────────────────────────┘
 ```
 ---
@@ -313,7 +346,6 @@ Owns the life cycle of a user request from start to finish
 
 ### Owns 
 - Current request context
-- Workflow state.
 - Application State
 
 ### Receives
@@ -323,7 +355,7 @@ Owns the life cycle of a user request from start to finish
 ### Returns
 - Application state updates and user-facing outcomes to the Presentation Layer.
 
-## 11.2 Intent manager
+## 11.2 Intent Manager
 ### Purpose 
 Translate natural language into a structured request that the rest of the system can execute.
 
@@ -423,6 +455,7 @@ VoiceResult
 -----------
 success
 transcript
+trancriptMetaData
 failure and reason
 ```
 
@@ -462,12 +495,10 @@ To  process the received whatsapp content into the information requested by the 
 - produces summarized content
 - returns the processing result
 - process content according to intent(extract content and summarize content)
-- Report when processing cannot be completed because the request is too vague or the content doesn't contain the requested information.
 
 ### Not to 
 - detect intent
 - perform any whatsapp web automation task
-- resolve ambiguity or missing information 
 - perform any unrelated task that doesn't involve summarization or extraction.
 
 ### Input
@@ -481,7 +512,6 @@ success
 
 processed content
 
-MissingInformation(optional)
 
 failureReason
 ```
@@ -490,6 +520,7 @@ failureReason
 
 ### Purpose
 To translate system uncertainty into clear questions that the user can answer and to interpret the users responses
+
 ### Responsibilities
 - Receives a request for clarification.
 - Determines what question to ask.
@@ -504,7 +535,9 @@ To translate system uncertainty into clear questions that the user can answer an
 - Own the Current Request.
 
 ### Input
-ClarificationRequest - failure reason, missing information, candidates(optional), currentparameters
+ClarificationRequest - ClarificationRequest is a transient context object constructed by the Request Coordinator. 
+It bundles the information required for the Clarification Manager to generate an appropriate clarification question. 
+It is not persisted or owned by the Clarification Manager.
 
 ### Output
 Clarification Prompt - success Questions and Options(optional) failureReason
@@ -573,5 +606,522 @@ RetryRequested
 
 FailureReason
 ```
-
+---
 ## 12. Folder Structure
+```mermaid
+sayna/
+│
+│── presentation/
+│
+│── prompts/
+│
+│── tests/
+│
+│── main.py
+│── config.py
+│── request_controller.py
+│── voice_manager.py
+│── clarification_manager.py
+│── intent_manager.py
+│── content_processor.py 
+│── whatsapp_automation.py
+
+
+"As additional execution surfaces (e.g., Telegram, Gmail, browser control) are added, 
+execution-specific components should be grouped into an Execution layer."
+```
+---
+## 13. Data Flow
+
+### 13.1 Core Data Objects
+- audio
+- transcript
+- structured request
+- voice result
+- content processed request
+- clarification result
+- clarification request
+- presentation event
+- action result
+- TranscriptionMetadata
+- intent result
+
+### 13.2 Normal Path
+```mermaid
+Audio
+    ↓
+Transcript
+    ↓
+IntentResult
+    ↓
+ActionResult
+    ↓
+ProcessedResult
+    ↓
+PresentationEvent
+```
+
+### 13.3 Clarification Flow
+```mermaid
+clarification request
+        ↓
+clarification prompt
+        ↓
+clarification result
+        ↓
+updated structured request
+```
+### 13.4 Failure Flow
+Voice Input
+```mermaid
+Voice result
+-----------
+success=False
+    ↓
+presentation event
+```
+
+```mermaid
+ActionResult (Failure)
+
+    ↓
+
+PresentationEvent
+```
+```mermaid
+IntentResult (Failure)
+
+    ↓
+
+PresentationEvent
+```
+```mermaid
+ProcessedResult (Failure)
+
+    ↓
+
+PresentationEvent
+```
+
+### 13.5 Data Ownership
+| Data                    | Owner                                    |
+|-------------------------| ---------------------------------------- |
+| Audio                   | Presentation Manager                     |
+| VoiceResult             | Request Coordinator (after receiving it) |
+| Current StructuredRequest | Request Coordinator                      |
+| Appplication State      | Request Coordinator                      |
+| ActionResult            | Request Coordinator (after receiving it) |
+| ProcessedResult         | Request Coordinator (after receiving it) |
+
+---
+
+## 14. Supporting files
+
+### 14.1 main.py
+
+### Purpose
+Initialize and bootstrap the application by creating the required components, connecting their dependencies, 
+and starting the application.
+
+### Responsibilities
+- Load the application configuration
+- Create all component instances
+- wires dependencies between components
+- Connect component dependencies
+- Starts the presentation layer
+- Exit gracefully if startup fails
+- Handle and report startup failures.
+- assemble the object graph
+
+
+### Must Not
+- Handle user request
+- detect intent
+- execute whatsapp actions
+- process content
+- process voice
+- manage workflow
+- render UI logic
+- store application state
+
+### Input
+None; main.py is the application runtime and its invoked by python runtime
+
+### Output
+None; On successful startup it starts the presentation and all necessary components as to begin accepting 
+user request.
+
+### 14.2 Config.py
+
+#### Purpose
+Provides a centralized validated resources needed to bootstrap the application
+
+#### Responsibilities
+- Load the application's configuration
+- Validate that all required fields are present
+- Expose configuration values to main.py
+- Report configuration errors
+
+ Not to do
+- Coordinate workflow.
+- Perform speech recognition.
+- Detect intent.
+- Execute WhatsApp actions.
+- Process WhatsApp content.
+- Render the UI.
+- Create application components.
+- Store request state.
+
+#### Input 
+- Environment Variables
+
+#### Output
+A validated config object 
+
+### 14.3 Prompts/
+
+#### Purpose
+It isolates prompt engineering from the rest of the application and provides dynamically generated prompts for AI 
+capabilities
+
+#### Responsibilities
+- Builds prompts dynamically using the provided input
+- Stores prompt template for each AI capability
+- Keep prompt engineering independent of business logic
+
+#### Must Not
+- Call the LLM
+- Parse AI output
+- Detect Intent
+- coordinate workflow and store application request
+
+#### Input
+Intent Prompt
+```mermaid
+Transcript
+```
+
+Summarization Prompt
+```mermaid
+Whatsapp content
+```
+
+Extract info 
+```mermaid
+whatsapp content 
+
+query
+```
+
+#### Output
+```mermaid
+A fully constructed prompt
+
+prompt string
+```
+
+#### Folder Structure
+
+```mermaid
+prompts/
+|
+|-- intent_prompt.py
+|-- content_prompt.py
+```
+
+#### intent_prompts.py
+Responsible for building prompts related to understanding
+
+Example
+```mermaid
+build_intent_prompt(transcript)
+```
+
+### STT Client.
+### Purpose
+Isolate all communications with the stt provider
+
+### Constructor Dependency
+groq sdk
+
+### Public Interface
+```mermaid
+transcribe(audio)
+```
+
+### Private Helpers
+```mermaid
+_build_transcription_result()
+
+_create_audio_format()
+
+```
+### High level algorithm
+```mermaid
+Receive audio bytes
+        ↓
+Create temporary WAV file
+        ↓
+Send transcription request
+        ↓
+Receive provider response
+        ↓
+Translate into TranscriptionResult
+        ↓
+Delete temporary file
+        ↓
+Return result
+```
+### Input
+```mermaid
+audio wav audio bytes
+```
+### Output
+```mermaid
+TranscriptionResult
+------------------
+Success
+Transcript (Optional)
+meta data (Optional)
+failureReason (Optional)
+```
+---
+
+
+### 15. Engineering Principles
+
+#### Principles
+1. Components reports facts, coordinator makes decisions
+
+2. Every component has one clear responsibility
+
+3. The request coordinator owns the request lifecycle
+
+4. Components never modify another components states
+
+5. Every piece of data has a single owner
+
+6. Components are independent of each other and know only what it needs to know
+
+7. Separate business logic from infrastructure
+
+8. Separate prompt engineering from the application logic
+
+9. Organize by responsibility not technology
+
+10. Introduce components only when they solve a real problem
+
+11. Build the simplest system that designs the hypothesis 
+
+12. Fail Explicitly never silently
+
+13. Refuse ambiguity rather than guessing
+
+14. Every Field Exists Because Someone Needs It.
+
+15. Keep Components Independently Testable.
+
+16. The Presentation Manager is the only entry point into the request-processing pipeline.
+
+17. Every public method represents capabilities while data represents variation
+
+18. Components should be open for extension but closed for modification.
+
+### 16. Module or class design
+#### 16.1 Request Coordinator
+
+#### 16.2 Constructor Dependencies
+The Request Coordinator receives the components it coordinates.
+
+- Presentation Manager
+- Voice Manager
+- Intent Manager
+- WhatsApp Action Manager
+- Content Processor
+- Clarification Manager
+
+These dependencies are created and connected by main.py.
+The Request Coordinator does not create its own dependencies.
+
+##### Public Interface
+```mermaid
+handle_audio(audio)
+```
+
+##### Purpose
+- Receive captured audio reported by the Presentation Manager and process it according to the current workflow state.
+
+- The Request Coordinator determines whether the audio:
+
+- starts a new request, or
+- resumes a paused request awaiting clarification.
+
+This decision is based entirely on its owned workflow state.
+
+#### Owns
+Current Request
+
+The temporary data required to complete the current user request.
+
+Workflow State
+
+Represents the current stage of request execution.
+
+##### Examples include:
+
+- Listening
+- Understanding Intent
+- Executing Action
+- Processing Content
+- Waiting for Clarification
+- Completed
+- Failed
+- High-Level Behaviour
+
+##### When handle_audio(audio) is invoked:
+- Inspect the current workflow state.
+- If no request is in progress, begin a new request.
+- If waiting for clarification, resume the paused request.
+- Coordinate the required components in the appropriate order.
+- Interpret each component's returned result.
+- Update the workflow state as execution progresses.
+- Notify the Presentation Manager of state changes and user-facing outcomes.
+- Design Rationale
+- The Presentation Manager reports user events but never interprets them.
+- The Request Coordinator owns the workflow state and therefore decides what captured audio represents.
+- Components never communicate directly; the Request Coordinator orchestrates all interactions.
+- Dependencies are injected by main.py, allowing the Request Coordinator to focus solely on request coordination.
+
+#### 16.3 Presentation Manager
+
+#### Constructor dependencies
+Request coordinator
+
+#### Public interface 
+```mermaid
+start()
+```
+Starts the user interface and begins accepting user interactions.
+```
+display_outcome(outcome)
+```
+Displays the current workflow state provided by the Request Coordinator.
+```
+request_clarification(question)
+```
+Displays the outcome of request execution.
+```
+show_workflow_state(state)
+```
+Presents a clarification question, captures the user's spoken response, and reports the captured audio to the 
+Request Coordinator.
+
+##### Owns
+- Microphone States
+---
+
+##### 16.3 Voice Manager 
+##### Constructor Dependencies
+- Speech Recognition Client
+Provided by main.py during application startup.
+The Voice Manager does not create or configure the speech recognition client itself.
+
+Public Interface
+```mermaid
+transcribe(audio)
+```
+Receive captured audio and return the transcription result.
+
+##### Owns
+- None.
+The Voice Manager is stateless.
+It performs transcription using only the provided audio and returns a VoiceResult without retaining 
+information between requests.
+---
+
+##### 16.4 Intent Manager
+
+#### Constructor Dependency
+- LLM client
+Provided by main.py
+
+#### Public Interface
+```mermaid
+detect_intent(transcript)
+```
+which makes use of the prompt builder and transcript provided by request coordinator
+
+#### Owns
+- None
+It simply receives a transcript and returns IntentResult 
+
+##### 16.5 Whatsapp Action Manager
+
+##### Constructor Dependency 
+- Browser Automation Engine
+Provided by main.py
+
+#### Public interface
+```mermaid
+execute(structured_request)
+```
+
+which makes use of the structured request and automation engine to return an Action Result
+#### Own
+- None
+---
+
+##### 16.6 Clarification Manager
+
+#### Constructor Dependency
+- LLM client
+
+#### Public Interface
+```mermaid
+generate_question(parameters)
+interpret_response()
+```
+
+#### Owns
+- None
+
+#### 16.7 Content Processor
+
+#### Constructor Dependency
+- LLM client
+
+#### Public Interface
+```mermaid
+process_content(content_processing_request)
+```
+Generates what the user wants based on intent, content and parameter 
+
+#### Owns 
+- Stateless
+
+## 17. Technologies
+
+### Technology decisions
+| Area               | Technology       |
+| ------------------ | ---------------- |
+| LLM                | Groq API         |
+| Speech-to-Text     | Groq Whisper API |
+| Browser Automation | Playwright       |
+| UI                 | PySide6          |
+| Language           | Python           |
+
+The MVP prioritizes technologies that provide a generous free tier while meeting the system's non-functional 
+requirements. Components are designed behind abstractions so providers can be replaced without affecting 
+the overall architecture.
+
+### Implementation Decisions
+| Decision               | Technology | Used For                                                                       |
+| ---------------------- | ------ | ------------------------------------------------------------------------------ |
+| Data Validation        | Pydantic | Validating data contracts and structured results exchanged between components. |
+| Testing Framework      | pytest | Unit, integration, and end-to-end testing.                                     |
+| Code Formatting        | Black  | Consistent code formatting across the project.                                 |
+| Linting                | Ruff   | Static analysis and code quality enforcement.                                  |
+| Environment Management | python-dotenv | Loading configuration from environment variables.                              |
+| Dependency Management  | uv     | Installing and managing project dependencies.                                  |
+| Logging                | Python `logging` | Recording application events, debugging, and diagnostics.                      |
+
