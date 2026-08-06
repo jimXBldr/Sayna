@@ -15,7 +15,8 @@ def load_config() -> Config:
         "groq_api_key": os.getenv("GROQ_API_KEY"),
         "stt_model": os.getenv("STT_MODEL"),
         "stt_response_format": os.getenv("STT_RESPONSE_FORMAT"),
-        "llm_model": os.getenv("LLM_MODEL")
+        "llm_model": os.getenv("LLM_MODEL"),
+        "language": os.getenv("STT_LANGUAGE")
     }
     missing_values = []
     for key, value in configurations.items():
@@ -24,3 +25,5 @@ def load_config() -> Config:
     if missing_values:
         raise ConfigurationError(f"Missing Required configuration:{','.join(missing_values)}")
     return Config(**configurations)
+
+
