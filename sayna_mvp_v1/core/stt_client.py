@@ -1,12 +1,12 @@
-# sayna_mvp_v1/core/stt_client.py
+     # sayna_mvp_v1/core/stt_client.py
 from sayna_mvp_v1.contracts.transcription import TranscriptionResult, TranscriptMetadata
-from sayna_mvp_v1.support.groq_errors_translator import translate_error
+from sayna_mvp_v1.support.errors_translator import translate_groq_error
 import tempfile
 import os
 
 
 class STTClient:
-    def __init__(self, groq_client, model, response_format):
+    def __init__(self, groq_client, model, response_format, language):
         """
 
         :param groq_client:
@@ -16,6 +16,7 @@ class STTClient:
         self._groq_client = groq_client
         self._model = model
         self._response_format = response_format
+        self._language = language
 
     def transcribe(self, audio):
         """
@@ -27,13 +28,14 @@ class STTClient:
         try:
             response = self._groq_client.audio.transcriptions.create(file=audio_file,
                                                                      model=self._model,
-                                                                     response_format=self._response_format)
+                                                                     response_format=self._response_format,
+                                                                     language=self._language)
             transcription_result = self._build_transcription_result(response)
             return transcription_result
         except Exception as e:
             print(type(e))
             print(e)
-            failure_reason = translate_error(e)
+            failure_reason = translate_groq_error(e)
             return TranscriptionResult(success=False, metadata=None, transcript=None, failure_reason=failure_reason)
         finally:
             audio_file.close()

@@ -604,7 +604,7 @@ Clarification Response
 
 RetryRequested
 
-FailureReason
+GroqFailureReason
 ```
 ---
 ## 12. Folder Structure

@@ -1,0 +1,1 @@
+Evaluate alternative STT providers using a benchmark of 50–100 Nigerian-English voice commands.

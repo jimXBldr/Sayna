@@ -8,3 +8,5 @@ class Config:
     stt_model: str
     stt_response_format: str
     llm_model: str
+    language: str
+

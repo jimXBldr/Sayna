@@ -5,8 +5,8 @@ from typing import Any
 
 @dataclass(frozen=True)
 class StructuredRequest:
-    intent: str
-    parameters: dict[str, Any]
+    intent: str | None
+    parameters: dict[str, Any] | None
 
 
 @dataclass(frozen=True)

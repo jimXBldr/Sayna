@@ -64,7 +64,6 @@ def record_audio() -> bytes:
 
 
 def main():
-
     # ---------------------------------------------------
     # Bootstrap
     # ---------------------------------------------------
@@ -79,6 +78,7 @@ def main():
         groq_client=groq_client,
         model=config.stt_model,
         response_format=config.stt_response_format,
+        language=config.language
     )
 
     llm_client = LLMClient(
@@ -108,6 +108,7 @@ def main():
     transcription = stt_client.transcribe(audio)
 
     stt_time = perf_counter() - stt_start
+    metadata = transcription.metadata
 
     print("=" * 50)
     print("STT RESULT")
@@ -119,6 +120,12 @@ def main():
 
     print(f"Transcript : {transcription.transcript}")
     print(f"Latency    : {stt_time:.3f} seconds")
+    print("\n==============================")
+    print("STT METADATA")
+    print("==============================")
+    print(f"Average Log Probability : {metadata.average_log_probability}")
+    print(f"No Speech Probability   : {metadata.no_speech_probability}")
+    print(f"Compression Ratio       : {metadata.compression_ratio}")
 
     # ---------------------------------------------------
     # Intent Detection

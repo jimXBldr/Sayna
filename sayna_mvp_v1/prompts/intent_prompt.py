@@ -43,16 +43,6 @@ class IntentPrompt:
         Parameters
             chat
             query
-        
-    This is the output schema 
-    {
-      "intent": null,
-      "parameters": {
-        "chat": null,
-        "message": null,
-        "query": null
-        }
-    }
     Rules:
         Return only a valid JSON object.
         Never include Markdown.
@@ -64,6 +54,13 @@ class IntentPrompt:
         If a required parameter cannot be inferred from the transcript, set only that parameter to null. 
         Do not guess missing values.
         Do not add fields that are not defined in the schema.
+        Correct transcription errors only when the intended word is highly probable from context. Do not invent 
+        names or missing information. If a person's name is uncertain, preserve the transcript rather than guessing.
+        The transcript may contain transcription mistakes because it comes from a speech recognition system. 
+        First infer the user's intended WhatsApp action from the overall meaning. 
+        Then extract only the parameters supported by that action. Do not copy incorrect words blindly when the 
+        surrounding context makes the intended meaning obvious. However, never invent missing names or 
+        information that cannot reasonably be inferred.
         
         Examples;
         1. Send message
@@ -98,7 +95,6 @@ class IntentPrompt:
           "intent":"extract_info",
           "parameters":{
               "chat":"Sarah",
-              "message":null,
               "query":"When did Sarah say the meeting is?"
           }
         }   
@@ -110,11 +106,7 @@ class IntentPrompt:
         Output:
         {
           "intent":null,
-          "parameters":{
-              "chat":null,
-              "message":null,
-              "query":null
-          }
+          "parameters":{}
         }
         
         Transcript: Tell James
@@ -122,9 +114,15 @@ class IntentPrompt:
         {
           "intent": "send_message",
           "parameters": {
-            "chat": "John",
+            "chat": "James",
             "message": null,
           }
+        }
+        
+        5. Unsupported Intent:
+        Transcript; Play music
+        Output {"intent": unsupported
+        "parameters":{}
         }
     """
 

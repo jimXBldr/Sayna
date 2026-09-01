@@ -1,5 +1,5 @@
 # core/llm_client.py
-from sayna_mvp_v1.support.groq_errors_translator import translate_error
+from sayna_mvp_v1.support.errors_translator import translate_groq_error
 from sayna_mvp_v1.contracts.llm import LLMResult
 class LLMClient:
     def __init__(self, groq_client, model):
@@ -16,7 +16,7 @@ class LLMClient:
         except Exception as e:
             print(e)
             print(type(e))
-            failure_reason = translate_error(e)
+            failure_reason = translate_groq_error(e)
             return LLMResult(success=False, content=None, failure_reason=failure_reason)
 
     def _extract_content_response(self, response):

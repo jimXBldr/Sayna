@@ -1,6 +1,6 @@
 # contract/transcription.py
 
-from sayna_mvp_v1.support.groq_errors_translator import FailureReason
+from sayna_mvp_v1.support.errors_translator import GroqFailureReason
 from dataclasses import dataclass
 
 
@@ -17,4 +17,4 @@ class TranscriptionResult:
     success: bool
     transcript: str | None
     metadata: TranscriptMetadata | None
-    failure_reason: FailureReason | None
+    failure_reason: GroqFailureReason | None
