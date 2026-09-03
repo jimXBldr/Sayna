@@ -23,7 +23,7 @@ class ActionResult:
 @dataclass(frozen=True)
 class ChatMatchResult:
     success: bool
-    locator: str | None
+    locator: object | None
     matches: list[str] | None
     failure_reason: WhatsappFailureReason | None
 
