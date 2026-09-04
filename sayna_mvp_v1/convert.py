@@ -10,8 +10,15 @@ def find_chat(chat: str):
     search_box = page.get_by_role("textbox", name="Search or start a new chat")
     search_box.clear()
     search_box.fill(chat)
-    results = page.get_by_role('grid', name='search_result')
+    results = page.get_by_role('grid', name="Search results.")
     results.wait_for()
+    search_results = []
+    for i in range(results.count()):
+        search_results.append(results.nth(i).inner_text())
+    return search_results
+
+
+
 
 
 
@@ -27,5 +34,5 @@ if __name__ == '__main__':
 
         input("Log into WhatsApp and press Enter here...")
 
-        find_chat('mum')
+        print(find_chat('mum'))
         page.pause()
