@@ -1,13 +1,26 @@
+from sayna_mvp_v1.contracts.action import ActionResult
+
+
 class WhatsappActionManager:
     def __init__(self, automation):
         self._automation = automation
-        pass
 
-    def open_chat(self):
-        pass
+    def open_chat(self, chat) -> ActionResult:
+        result = self._automation.find_chat(chat)
+        if result.success:
+            self._automation.click_chat(result.locator)
+            return ActionResult(success=True, data=None, failure_reason=None, matches=result.matches)
+        return ActionResult(success=False, data=None, failure_reason=result.failure_reason, matches=result.matches)
 
-    def send_message(self):
-        pass
+    def send_message(self, chat: str, message: str) -> ActionResult:
+        action_result = self.open_chat(chat)
+        if action_result.success:
+            self._automation.click_send(message)
+            return ActionResult(success=True, data=None, failure_reason=None, matches=None)
+        return ActionResult(success=False, data=None, failure_reason=action_result.failure_reason, matches=None)
 
-    def get_content(self):
-        pass
+    def get_content(self, ) -> ActionResult:
+        messages = self._automation.get_messages()
+        if messages.success:
+            return ActionResult(success=True, data=messages.content, failure_reason=None, matches=None)
+        return ActionResult(success=False, data=None, failure_reason=messages.failure_reason, matches=None)

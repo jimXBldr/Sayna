@@ -4,7 +4,6 @@ from sayna_mvp_v1.support.errors_translator import GroqFailureReason
 from dataclasses import dataclass
 
 
-
 @dataclass
 class TranscriptMetadata:
     no_speech_probability: float

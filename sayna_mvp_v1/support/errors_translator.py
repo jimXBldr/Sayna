@@ -63,3 +63,4 @@ class WhatsappFailureReason(Enum):
     UNKNOWN_ERROR = "unknown_error"
     WHATSAPP_UNAVAILABLE = "whatsapp_unavailable"
     ACTION_FAILED = "action_failed"
+    MULTIPLE_EXACT_CHATS_FOUND = "multiple_exact_chats_found"
