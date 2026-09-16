@@ -1,7 +1,3 @@
-"""
-Provide a browser-automation interface for interacting with WhatsApp Web without exposing
-Playwright-specific implementation details to the rest of Sayna.
-"""
 import re
 
 from sayna_mvp_v1.contracts.action import ChatMatchResult, MessageResult
@@ -13,10 +9,6 @@ class WhatsappAutomationManager:
         self._page = page
 
     def find_chat(self, chat: str) -> ChatMatchResult:
-        """
-        Find the WhatsApp chat/contact requested by the user and return enough information for the
-        Action Manager to proceed or clarify.
-        """
         search_box = self._page.get_by_role("textbox", name="Search or start a new chat")
         search_box.clear()
         search_box.fill(chat)
@@ -68,12 +60,9 @@ class WhatsappAutomationManager:
         return MessageResult(success=False, content=None, failure_reason=WhatsappFailureReason.UNKNOWN_ERROR)
 
     def click_send(self):
-        pass
-
-
+        self._page.get_by_test_id("compose-box").get_by_role("button", name="Send").click()
 
     def type_message(self, message):
-        self._page
         pass
 
     def get_contacts(self) -> list[str]:

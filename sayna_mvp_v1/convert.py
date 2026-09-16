@@ -1,5 +1,5 @@
 from playwright.sync_api import sync_playwright
-from sayna_mvp_v1.contracts.action import ChatMatchResult, Messages
+from sayna_mvp_v1.contracts.action import ChatMatchResult, MessageResult
 from sayna_mvp_v1.support.errors_translator import WhatsappFailureReason
 import re
 
@@ -12,8 +12,8 @@ def get_messages(chat):
         contents = []
         for i in range(messages.count()):
             contents.append(messages.nth(i).inner_text())
-        return Messages(success=True, content=contents, failure_reason=None)
-    return Messages(success=False, content=None,failure_reason=None)
+        return MessageResult(success=True, content=contents, failure_reason=None)
+    return MessageResult(success=False, content=None,failure_reason=None)
 
 
 def find_chat(chat: str):
