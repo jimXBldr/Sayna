@@ -2,6 +2,7 @@
 from dataclasses import dataclass
 from sayna_mvp_v1.support.errors_translator import WhatsappFailureReason
 
+
 @dataclass(frozen=True)
 class MessageResult:
     success: bool
@@ -9,11 +10,10 @@ class MessageResult:
     failure_reason: WhatsappFailureReason | None
 
 
-
 @dataclass(frozen=True)
 class ActionResult:
     success: bool
-    data: list[Messages] | None
+    data: list[MessageResult] | None
     failure_reason: WhatsappFailureReason | None
     matches: list[str] | None
 
@@ -24,9 +24,3 @@ class ChatMatchResult:
     locator: object | None
     matches: list[str] | None
     failure_reason: WhatsappFailureReason | None
-
-
-@dataclass(frozen=True)
-class SearchResult:
-    title: str
-    locator: object

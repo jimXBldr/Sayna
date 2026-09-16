@@ -70,7 +70,13 @@ if __name__ == '__main__':
 
         input("Log into WhatsApp and press Enter here...")
 
-        messages = get_messages('final year')
+        messages = get_messages('Subomi Obans')
         print(messages)
+        message_box = page.get_by_role('paragraph')
+        print('Gotten the messaging editable component')
+        message_box.fill('Are you in class?')
+        print('Message typed')
+        page.get_by_test_id("compose-box").get_by_role("button", name="Send").click()
+        print('Sent')
 
         page.pause()

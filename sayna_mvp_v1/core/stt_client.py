@@ -7,23 +7,14 @@ import os
 
 class STTClient:
     def __init__(self, groq_client, model, response_format, language):
-        """
 
-        :param groq_client:
-        :param model:
-        :param response_format:
-        """
         self._groq_client = groq_client
         self._model = model
         self._response_format = response_format
         self._language = language
 
     def transcribe(self, audio):
-        """
 
-        :param audio:
-        :return:
-        """
         audio_file = self._create_audio_file(audio)
         try:
             response = self._groq_client.audio.transcriptions.create(file=audio_file,

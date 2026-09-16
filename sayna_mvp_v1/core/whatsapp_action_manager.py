@@ -15,12 +15,13 @@ class WhatsappActionManager:
     def send_message(self, chat: str, message: str) -> ActionResult:
         action_result = self.open_chat(chat)
         if action_result.success:
-            self._automation.click_send(message)
+            self._automation.type_message(message)
+            self._automation.click_send()
             return ActionResult(success=True, data=None, failure_reason=None, matches=None)
         return ActionResult(success=False, data=None, failure_reason=action_result.failure_reason, matches=None)
 
-    def get_content(self, ) -> ActionResult:
-        messages = self._automation.get_messages()
+    def get_content(self, chat) -> ActionResult:
+        messages = self._automation.get_messages(chat)
         if messages.success:
             return ActionResult(success=True, data=messages.content, failure_reason=None, matches=None)
         return ActionResult(success=False, data=None, failure_reason=messages.failure_reason, matches=None)

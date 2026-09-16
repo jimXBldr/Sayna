@@ -63,7 +63,9 @@ class WhatsappAutomationManager:
         self._page.get_by_test_id("compose-box").get_by_role("button", name="Send").click()
 
     def type_message(self, message):
-        pass
+        message_box = self._page.get_by_role('paragraph')
+        message_box.clear()
+        message_box.fill(message)
 
     def get_contacts(self) -> list[str]:
         pass
