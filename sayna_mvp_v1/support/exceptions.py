@@ -8,3 +8,5 @@ class InvalidIntentResponse(Exception):
     pass
 
 
+class InvalidProcessResult(Exception):
+    pass
