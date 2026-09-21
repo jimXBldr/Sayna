@@ -1,5 +1,6 @@
 from sayna_mvp_v1.contracts.content import ProcessedResult
 from sayna_mvp_v1.support.exceptions import InvalidProcessResult
+from sayna_mvp_v1.contracts.llm import LLMResult
 
 
 class ContentProcessor:
@@ -17,12 +18,12 @@ class ContentProcessor:
         content = self._llm_client.generate(prompt)
         return self._build_processed_result(content)
 
-    def _validate_response(self, llm_response):
+    def _validate_response(self, llm_response: LLMResult) -> LLMResult:
         if not isinstance(llm_response.content, str):
-            raise InvalidProcessResult('Response must be a string')
+            raise InvalidProcessResult('Content must be a string.')
         return llm_response
 
-    def _build_processed_result(self, llm_response) -> ProcessedResult:
+    def _build_processed_result(self, llm_response: LLMResult) -> ProcessedResult:
         if llm_response.success:
             valid_content = self._validate_response(llm_response)
             return ProcessedResult(success=True, processed_result=valid_content.content, failure_reason=None)
