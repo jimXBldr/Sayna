@@ -11,10 +11,12 @@ class ContentProcessor:
         prompt = self._content_prompt.build_extract_info_prompt(content, query)
         content = self._llm_client.generate(prompt=prompt)
         return self._build_processed_result(content)
+
     def summarize_chat(self, content: str) -> ProcessedResult:
         prompt = self._content_prompt.build_summarization_prompt(content)
         content = self._llm_client.generate(prompt)
         return self._build_processed_result(content)
+
     def _validate_response(self, llm_response):
         if not isinstance(llm_response.content, str):
             raise InvalidProcessResult('Response must be a string')
