@@ -20,7 +20,7 @@ class IntentManager:
     def _validate_response(self, response: dict) -> dict:
         if not isinstance(response, dict):
             raise InvalidIntentResponse('LLM response must be a JSON object.')
-        if "intent" not in response or "parameters" not in response:
+        if "intent" not in response:
             raise InvalidIntentResponse('Missing Intent Field.')
         if "parameters" not in response:
             raise InvalidIntentResponse('Missing Parameter Field.')
