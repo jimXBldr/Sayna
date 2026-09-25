@@ -15,6 +15,7 @@ llm_client = LLMClient(model=configurations.llm_model, groq_client=groq_client)
 content_prompt = ContentProcessorPrompt()
 content_processor = ContentProcessor(llm_client=llm_client, content_prompt=content_prompt)
 
+
 def get_messages(chat) -> MessageResult:
     chat = find_chat(chat)
     if chat.success:
@@ -23,8 +24,10 @@ def get_messages(chat) -> MessageResult:
         contents = []
         for i in range(messages.count()):
             contents.append(messages.nth(i).inner_text())
+        if len(contents) == 0:
+            return MessageResult(success=False, content=None, failure_reason=WhatsappFailureReason.NO_MESSAGES_FOUND)
         return MessageResult(success=True, content=contents, failure_reason=None)
-    return MessageResult(success=False, content=None,failure_reason=None)
+    return MessageResult(success=False, content=None, failure_reason=None)
 
 
 def find_chat(chat: str):
@@ -81,9 +84,10 @@ if __name__ == '__main__':
 
         input("Log into WhatsApp and press Enter here...")
 
-        messages = get_messages('Najeebah')
+        messages = get_messages('Subomi Obans')
         print(messages)
-        extract_info = content_processor.extract_info(content=messages.content, query='What did Subomi said about Mrs Tope elective')
+        extract_info = content_processor.extract_info(content=messages.content,
+                                                      query='What did Subomi about going to cossa match')
         print(f"Here is the extracted content: {extract_info}")
         print(f"Here is the summarized content: {content_processor.summarize_chat(content=messages.content)}")
         page.pause()

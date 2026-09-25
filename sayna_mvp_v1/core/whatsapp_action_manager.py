@@ -1,5 +1,5 @@
 from sayna_mvp_v1.contracts.action import ActionResult
-
+from sayna_mvp_v1.support.errors_translator import WhatsappFailureReason
 
 class WhatsappActionManager:
     def __init__(self, automation):
