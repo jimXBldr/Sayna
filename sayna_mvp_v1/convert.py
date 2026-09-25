@@ -2,9 +2,20 @@ from playwright.sync_api import sync_playwright
 from sayna_mvp_v1.contracts.action import ChatMatchResult, MessageResult
 from sayna_mvp_v1.support.errors_translator import WhatsappFailureReason
 import re
+from sayna_mvp_v1.core.content_processor import ContentProcessor
+from sayna_mvp_v1.prompts.content_prompt import ContentProcessorPrompt
+from sayna_mvp_v1.core.llm_client import LLMClient
+from sayna_mvp_v1.support.config import load_config
+from groq import Groq
 
+configurations = load_config()
 
-def get_messages(chat):
+groq_client = Groq(api_key=configurations.groq_api_key)
+llm_client = LLMClient(model=configurations.llm_model, groq_client=groq_client)
+content_prompt = ContentProcessorPrompt()
+content_processor = ContentProcessor(llm_client=llm_client, content_prompt=content_prompt)
+
+def get_messages(chat) -> MessageResult:
     chat = find_chat(chat)
     if chat.success:
         chat.locator.click()
@@ -70,13 +81,9 @@ if __name__ == '__main__':
 
         input("Log into WhatsApp and press Enter here...")
 
-        messages = get_messages('Subomi Obans')
+        messages = get_messages('Najeebah')
         print(messages)
-        message_box = page.get_by_role('paragraph')
-        print('Gotten the messaging editable component')
-        message_box.fill('Are you in class?')
-        print('Message typed')
-        page.get_by_test_id("compose-box").get_by_role("button", name="Send").click()
-        print('Sent')
-
+        extract_info = content_processor.extract_info(content=messages.content, query='What did Subomi said about Mrs Tope elective')
+        print(f"Here is the extracted content: {extract_info}")
+        print(f"Here is the summarized content: {content_processor.summarize_chat(content=messages.content)}")
         page.pause()

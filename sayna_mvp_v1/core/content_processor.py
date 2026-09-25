@@ -8,12 +8,12 @@ class ContentProcessor:
         self._llm_client = llm_client
         self._content_prompt = content_prompt
 
-    def extract_info(self, content: str, query: str) -> ProcessedResult:
+    def extract_info(self, content: list[str], query: str) -> ProcessedResult:
         prompt = self._content_prompt.build_extract_info_prompt(content, query)
         content = self._llm_client.generate(prompt=prompt)
         return self._build_processed_result(content)
 
-    def summarize_chat(self, content: str) -> ProcessedResult:
+    def summarize_chat(self, content: list[str]) -> ProcessedResult:
         prompt = self._content_prompt.build_summarization_prompt(content)
         content = self._llm_client.generate(prompt)
         return self._build_processed_result(content)
@@ -24,7 +24,12 @@ class ContentProcessor:
         return llm_response
 
     def _build_processed_result(self, llm_response: LLMResult) -> ProcessedResult:
+
         if llm_response.success:
-            valid_content = self._validate_response(llm_response)
-            return ProcessedResult(success=True, processed_result=valid_content.content, failure_reason=None)
+            try:
+                valid_content = self._validate_response(llm_response)
+                return ProcessedResult(success=True, processed_result=valid_content.content, failure_reason=None)
+            except Exception as e:
+                return ProcessedResult(success=False, processed_result=None, failure_reason=e)
+
         return ProcessedResult(success=False, processed_result=None, failure_reason=llm_response.failure_reason)
