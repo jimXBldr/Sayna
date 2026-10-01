@@ -33,3 +33,4 @@ class ContentProcessor:
                 return ProcessedResult(success=False, processed_result=None, failure_reason=e)
 
         return ProcessedResult(success=False, processed_result=None, failure_reason=llm_response.failure_reason)
+

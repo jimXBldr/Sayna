@@ -11,8 +11,11 @@ from groq import Groq
 configurations = load_config()
 
 groq_client = Groq(api_key=configurations.groq_api_key)
+
 llm_client = LLMClient(model=configurations.llm_model, groq_client=groq_client)
+
 content_prompt = ContentProcessorPrompt()
+
 content_processor = ContentProcessor(llm_client=llm_client, content_prompt=content_prompt)
 
 
@@ -25,9 +28,10 @@ def get_messages(chat) -> MessageResult:
         for i in range(messages.count()):
             contents.append(messages.nth(i).inner_text())
         if len(contents) == 0:
-            return MessageResult(success=False, content=None, failure_reason=WhatsappFailureReason.NO_MESSAGES_FOUND)
-        return MessageResult(success=True, content=contents, failure_reason=None)
-    return MessageResult(success=False, content=None, failure_reason=None)
+            return MessageResult(success=False, content=None, failure_reason=WhatsappFailureReason.NO_MESSAGES_FOUND,
+                                 matches=None)
+        return MessageResult(success=True, content=contents, failure_reason=None, matches=None)
+    return MessageResult(success=False, content=None, failure_reason=None, matches=chat.matches)
 
 
 def find_chat(chat: str):
@@ -59,7 +63,11 @@ def find_chat(chat: str):
         return ChatMatchResult(success=True, locator=contact.nth(0).get_by_test_id('cell-frame-title'),
                                matches=None, failure_reason=None)
     elif len(exact_matches) == 0:
-        return ChatMatchResult(success=False, locator=None, matches=contacts,
+        multiple_chats = []
+        for i in contacts:
+            if chat in i:
+                multiple_chats.append(i)
+        return ChatMatchResult(success=False, locator=None, matches=multiple_chats,
                                failure_reason=WhatsappFailureReason.MULTIPLE_CHATS_FOUND)
     elif len(exact_matches) > 1:
         return ChatMatchResult(success=False, locator=None, matches=exact_matches,
@@ -84,7 +92,7 @@ if __name__ == '__main__':
 
         input("Log into WhatsApp and press Enter here...")
 
-        messages = get_messages('Subomi Obans')
+        messages = get_messages('Lateef')
         print(messages)
         extract_info = content_processor.extract_info(content=messages.content,
                                                       query='What did Subomi about going to cossa match')

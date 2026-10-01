@@ -41,3 +41,5 @@ class IntentManager:
         except (InvalidIntentResponse, json.JSONDecodeError) as e:
             return IntentResult(success=False, structured_request=None, failure_reason=e)
 
+        except Exception as e:
+            return IntentResult(success=False, structured_request=None, failure_reason=e)

@@ -8,6 +8,7 @@ class MessageResult:
     success: bool
     content: list[str] | None
     failure_reason: WhatsappFailureReason | None
+    matches: list[str] | None
 
 
 @dataclass(frozen=True)
