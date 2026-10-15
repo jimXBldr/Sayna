@@ -1,5 +1,4 @@
 from sayna_mvp_v1.contracts.action import ActionResult
-from sayna_mvp_v1.support.errors_translator import WhatsappFailureReason
 
 class WhatsappActionManager:
     def __init__(self, automation):
@@ -24,4 +23,4 @@ class WhatsappActionManager:
         messages = self._automation.get_messages(chat)
         if messages.success:
             return ActionResult(success=True, data=messages.content, failure_reason=None, matches=None)
-        return ActionResult(success=False, data=None, failure_reason=messages.failure_reason, matches=None)
+        return ActionResult(success=False, data=None, failure_reason=messages.failure_reason, matches=messages.matches)

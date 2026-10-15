@@ -311,7 +311,7 @@ End interaction
                                                   │
                                                   ▼
                                      ┌─────────────────────────┐
-                                     │ WhatsApp Action Manager │ 
+                                     │ Action Manager          │ 
                                      └─────────────────────────┘
                                                   │
                                                   │

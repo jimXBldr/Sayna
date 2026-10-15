@@ -12,12 +12,14 @@ class WhatsappAutomationManager:
         search_box = self._page.get_by_role("textbox", name="Search or start a new chat")
         search_box.clear()
         search_box.fill(chat)
-        self._page.wait_for_timeout(3000)
+        self._page.wait_for_timeout(2000)
         results = self._page.get_by_role(role='grid', name='Search results.')
         contact = results.get_by_test_id('cell-frame-container')
         contacts = []
         for i in range(contact.count()):
-            contacts.append(contact.nth(i).get_by_test_id('cell-frame-title').inner_text())
+            title = contact.nth(i).get_by_test_id("cell-frame-title")
+            if title.count() > 0 and title.is_visible():
+                contacts.append(title.inner_text())
         for index, i in enumerate(contacts):
             if '\n' in i:
                 contacts[index] = i.split('\n')[-1]
@@ -48,7 +50,7 @@ class WhatsappAutomationManager:
     def click_chat(self, locator):
         locator.click()
 
-    def get_messages(self, chat):
+    def get_messages(self, chat: str):
         chat = self.find_chat(chat)
         if chat.success:
 
@@ -56,11 +58,17 @@ class WhatsappAutomationManager:
             messages = self._page.get_by_test_id(re.compile("^conv-msg-"))
             contents = []
             for i in range(messages.count()):
-                contents.append(messages.nth(i).inner_text())
+                message = messages.nth(i)
+                if message.get_by_test_id("tail-in").count() > 0:
+                    sender = chat
+                elif message.get_by_test_id('tail-out').count() > 0:
+                    sender = "Me"
+                contents.append(f"{sender}: {messages.nth(i).inner_text()}")
             if len(contents) == 0:
-                return MessageResult(success=False, content=None, failure_reason=WhatsappFailureReason.NO_MESSAGES_FOUND)
-            return MessageResult(success=True, content=contents, failure_reason=None)
-        return MessageResult(success=False, content=None, failure_reason=WhatsappFailureReason.UNKNOWN_ERROR,
+                return MessageResult(success=False, content=None,
+                                     failure_reason=WhatsappFailureReason.NO_MESSAGES_FOUND, matches=None)
+            return MessageResult(success=True, content=contents, failure_reason=None, matches=chat.matches)
+        return MessageResult(success=False, content=None, failure_reason=chat.failure_reason,
                              matches=chat.matches)
 
     def click_send(self):
@@ -73,6 +81,7 @@ class WhatsappAutomationManager:
 
     def get_contacts(self) -> list[str]:
         pass
+
 
 class BrowserAutomationManager:
     """
