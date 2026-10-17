@@ -14,7 +14,7 @@ class MessageResult:
 @dataclass(frozen=True)
 class ActionResult:
     success: bool
-    data: list[MessageResult] | None
+    data: list[str] | None
     failure_reason: WhatsappFailureReason | None
     matches: list[str] | None
 
