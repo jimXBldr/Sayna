@@ -32,26 +32,25 @@ if __name__ == '__main__':
         automation = WhatsappAutomationManager(page)
         whatsapp_action_manger = WhatsappActionManager(automation=automation)
 
-        # messages = whatsapp_action_manger.get_content('Moyo')
-        # print('\n---Message Result---')
-        # print(messages)
-        #
-        # summarized_chat = content_processor.summarize_chat(messages.data)
-        # print('\n---Processed result for summarizing chat---')
-        # print(summarized_chat)
-        #
-        # extracted_info = content_processor.extract_info(messages.data, query='Why did Moyo apologized')
-        # print('\n---Processed result for extracting info---')
-        # print(extracted_info)
+        messages = whatsapp_action_manger.get_content('Moyo')
+        print('\n---Message Result---')
+        print(messages)
 
-        send_message = whatsapp_action_manger.send_message(chat='Damisi', message='When should I call you?')
-        print('\n---Action Result for sending message---')
-        print(send_message)
+        summarized_chat = content_processor.summarize_chat(messages.data)
+        print('\n---Processed result for summarizing chat---')
+        print(summarized_chat)
+
+        extracted_info = content_processor.extract_info(messages.data, query='Why did Moyo apologized')
+        print('\n---Processed result for extracting info---')
+        print(extracted_info)
 
         open_chat = whatsapp_action_manger.open_chat('Subomi Obans')
         print('\n---Action Result for opening message---')
         print(open_chat)
 
+        send_message = whatsapp_action_manger.send_message(chat='Damisi', message="""Test message""")
+        print('\n---Action Result for sending message---')
+        print(send_message)
 
 
         page.pause()

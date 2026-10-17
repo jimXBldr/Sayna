@@ -17,7 +17,8 @@ class WhatsappActionManager:
             self._automation.type_message(message)
             self._automation.click_send()
             return ActionResult(success=True, data=None, failure_reason=None, matches=None)
-        return ActionResult(success=False, data=None, failure_reason=action_result.failure_reason, matches=None)
+        return ActionResult(success=False, data=None, failure_reason=action_result.failure_reason,
+                            matches=action_result.matches)
 
     def get_content(self, chat) -> ActionResult:
         messages = self._automation.get_messages(chat)

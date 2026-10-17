@@ -1,0 +1,5 @@
+- No established solution for when multiple exact matches are found.
+- No established solution for when whatsapp doesn't behave as expected
+- No established solution on how to deal with whatsapp group chats in terms of differentiating the different actors that sends a message.
+- 
+- 

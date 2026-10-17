@@ -9,8 +9,7 @@ class WhatsappAutomationManager:
         self._page = page
 
     def find_chat(self, chat: str) -> ChatMatchResult:
-        search_box = self._page.get_by_role("textbox", name="Search or start a new chat")
-        search_box.clear()
+        search_box = self._page.get_by_role("textbox").first
         search_box.fill(chat)
         self._page.wait_for_timeout(2000)
         results = self._page.get_by_role(role='grid', name='Search results.')
@@ -51,6 +50,7 @@ class WhatsappAutomationManager:
         locator.click()
 
     def get_messages(self, chat: str):
+        chat_name = chat
         chat = self.find_chat(chat)
         if chat.success:
 
@@ -60,7 +60,7 @@ class WhatsappAutomationManager:
             for i in range(messages.count()):
                 message = messages.nth(i)
                 if message.get_by_test_id("tail-in").count() > 0:
-                    sender = chat
+                    sender = chat_name
                 elif message.get_by_test_id('tail-out').count() > 0:
                     sender = "Me"
                 contents.append(f"{sender}: {messages.nth(i).inner_text()}")
